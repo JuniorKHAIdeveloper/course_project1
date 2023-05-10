@@ -30,12 +30,12 @@ const Search = ({setQuery, handleSubmit}) => {
           sx={{ m: 1 }}
           onChange={(event) => setQuery(event.target.value)}
         />
-        <FormControlLabel
+        {/* <FormControlLabel
           control={
             <Switch defaultChecked name="chat-gpt" />
           }
           label="AI"
-        />
+        /> */}
         <Button sx={{height: "56px", verticalAlign: "super"}} variant="contained" onClick={handleSubmit}>
           <SearchIcon style={{marginLeft: "16px"}} />
           <span style={{ verticalAlign: "super", marginLeft: "10px", marginRight: "16px" }}>

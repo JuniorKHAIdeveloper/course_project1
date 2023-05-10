@@ -7,8 +7,10 @@ const express = require("express");
 const fetch = (...args) =>
   import("node-fetch").then(({ default: fetch }) => fetch(...args));
 const cheerio = require("cheerio");
+const fs = require("fs");
+const puppeteer = require('puppeteer');
 
-const siteRouter = require('./db/routers/site')
+const siteRouter = require("./db/routers/site");
 const Site = require("./db/models/site");
 
 const app = express();
@@ -18,7 +20,7 @@ const PORT = process.env.PORT || process.env.STATIC_PORT;
 app.use(express.json()); // parse JSON bodies
 app.use(express.urlencoded({ extended: true })); // parse URL-encoded bodies
 
-app.use(siteRouter)
+app.use(siteRouter);
 
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
@@ -64,195 +66,81 @@ app.post("/search", async (req, res) => {
 
   const results = [];
 
+  // const browser = await puppeteer.launch();
+
   try {
-    await fetch(`${sites[1].siteSearchUrl}${search}`)
-      .then((response) => {
-        return response.text();
-      })
-      .then((data) => {
+    async function fetchSearchResults(searchTerm, site) {
+      try {
+        // const page = await browser.newPage();
+        // await page.goto(`${site.siteSearchUrl}${searchTerm}`);
+
+        // await page.waitForFunction(() => {
+        //   return document.readyState === 'complete';
+        // });
+
+        // const html = await page.content();
+        // const $ = cheerio.load(html);
+
+        const response = await fetch(`${site.siteSearchUrl}${searchTerm}`);
+        const data = await response.text();
         const $ = cheerio.load(data);
 
-        const parent = $(sites[1].containerSelector);
-        const card = parent.children(sites[1].itemSelector).first();
+        // const html = $.html();
+        // fs.writeFile(`${site.siteName}.html`, html, (err) => {
+        //   if (err) {
+        //     console.error(err);
+        //   } else {
+        //     console.log("Page saved!");
+        //   }
+        // });
 
-        const image = $(card).find(sites[1].imageSelector).first().attr("src");
-        const title = $(card).find(sites[1].titleSelector).first().text();
-        const author = $(card).find(sites[1].authorSelector).first().text();
-        const price = $(card).find(sites[1].priceSelector).first().text();
-        const availabel = $(card).find(sites[1].availabelSelector).first().text();
+        // if ($("body").length > 0) {
+        //   console.log("Page loaded successfully");
+        // } else {
+        //   console.log("Page did not load properly");
+        // }
 
-        results.push({
-          source: sites[1].siteName,
-          image,
-          title,
-          author,
-          price,
-          availabel,
-        });
-      })
-      .catch((error) => {
+        const parent = $(site.containerSelector);
+        const card = parent.children(site.itemSelector).first();
+
+        const image = $(card).find(site.imageSelector).attr("src");
+        const title = $(card).find(site.titleSelector).text();
+        const author = $(card).find(site.authorSelector).text();
+        const price = $(card).find(site.priceSelector).text();
+        const available = $(card).find(site.availabelSelector).text();
+        const bookUrl = $(card).find(site.bookUrlSelector).attr("href");
+
+        const parsePrice = (string) => {
+          return string.replace(/ /g, "").replace(".", "").replace("грн", "");
+        };
+
+        if (Boolean(title)) {
+          results.push({
+            source: site.siteName,
+            image: image?.includes("http") ? image : `${site.siteUrl}${image}`,
+            title,
+            author,
+            price: parsePrice(price),
+            available,
+            bookUrl: bookUrl?.includes("http")
+              ? bookUrl
+              : `${site.siteUrl}${bookUrl}`,
+          });
+        }
+      } catch (error) {
         console.error(error);
-      });
+      }
+    }
+    async function startSearch() {
+      for (let i = 0; i < sites.length; i++) {
+        await fetchSearchResults(search, sites[i]);
+      }
+    }
 
-    // await fetch(
-    //   `https://www.bookovka.ua/uk/search?orderby=position&orderway=desc&search_query=${search}`
-    // )
-    //   .then((response) => {
-    //     return response.text();
-    //   })
-    //   .then((data) => {
-    //     const $ = cheerio.load(data);
+    
+    await startSearch();
 
-    //     const parent = $("ul.product_list");
-    //     const card = parent.children().first();
-
-    //     // const image = $(this).attr('src');
-    //     const image = $(card).find("img").first().attr("src");
-    //     const title = $(card).find("a.product-name").first().text();
-    //     const price = $(card).find("span.product-price").first().text();
-    //     const availabel = $(card).find("span.stock_label").first().text();
-
-    //     results.push({
-    //       source: 'bookovka.ua',
-    //       image,
-    //       title,
-    //       author: "",
-    //       price,
-    //       availabel,
-    //     });
-    //   })
-    //   .catch((error) => {
-    //     console.error(error);
-    //   });
-
-    //   await fetch(
-    //     `https://book24.ua/ua/catalog/?q=${search}`
-    //   )
-    //     .then((response) => {
-    //       return response.text();
-    //     })
-    //     .then((data) => {
-    //       const $ = cheerio.load(data);
-  
-    //       const parent = $("div.catalog_block");
-    //       const card = parent.children("div.item").first();
-          
-    //       // const image = $(this).attr('src');
-    //       const image = $(card).find("span.section-gallery-wrapper__item _active img").attr("src");
-    //       const title = $(card).find("div.item-title").first().text();
-    //       const author = $(card).find("div.article_block").first().text();
-    //       const price = $(card).find("span.values_wrapper").first().text();
-    //       const availabel = $(card).find("div.item-stock").first().text();
-  
-    //       results.push({
-    //         source: 'book24.ua',
-    //         image,
-    //         title,
-    //         author,
-    //         price,
-    //         availabel,
-    //       });
-    //     })
-    //     .catch((error) => {
-    //       console.error(error);
-    //     });
-
-    //   await fetch(
-    //     `https://www.booklya.ua/search/?q=${search}`
-    //   )
-    //     .then((response) => {
-    //       return response.text();
-    //     })
-    //     .then((data) => {
-    //       const $ = cheerio.load(data);
-  
-    //       const parent = $("div.goodsContainer");
-    //       const card = parent.children("div.goodsItem").first();
-          
-    //       // const image = $(this).attr('src');
-    //       const image = $(card).find("img").first().attr("src");
-    //       const title = $(card).find("a.goodsItem-t").first().text();
-    //       const author = $(card).find("span.MB_authorName").first().text();
-    //       const price = $(card).find("div.goodsItem-ba-SinglePrice").first().text();
-    //       // const availabel = $(card).find("div.item-stock").first().text();
-  
-    //       results.push({
-    //         source: 'booklya.ua',
-    //         image,
-    //         title,
-    //         author,
-    //         price,
-    //         availabel: '',
-    //       });
-    //     })
-    //     .catch((error) => {
-    //       console.error(error);
-    //     });
-
-    //   await fetch(
-    //     `https://www.yakaboo.ua/ua/search?q=${search}`
-    //   )
-    //     .then((response) => {
-    //       return response.text();
-    //     })
-    //     .then((data) => {
-    //       const $ = cheerio.load(data);
-  
-    //       const parent = $("div.products-wrap");
-    //       const card = parent.children("div.product").first();
-          
-    //       // const image = $(this).attr('src');
-    //       const image = $(card).find("img.product__media").first().attr("src");
-    //       const title = $(card).find("a.product__name").first().text();
-    //       const author = $(card).find("div.product__author").first().text();
-    //       const price = $(card).find("div.product__price-current").first().text();
-    //       const availabel = $(card).find("div.product__btn-text").first().text();
-  
-    //       results.push({
-    //         source: 'book-ye.com.ua',
-    //         image,
-    //         title,
-    //         author,
-    //         price,
-    //         availabel,
-    //       });
-    //     })
-    //     .catch((error) => {
-    //       console.error(error);
-    //     });
-
-    //   await fetch(
-    //     `https://bookclub.ua/#/search/${search}`
-    //   )
-    //     .then((response) => {
-    //       return response.text();
-    //     })
-    //     .then((data) => {
-    //       const $ = cheerio.load(data);
-  
-    //       const parent = $("div.multi-lists");
-    //       console.log(parent.length)
-    //       const card = parent.children("div.multi-cell").first();
-    //       console.log(card.length)
-    //       // const image = $(this).attr('src');
-    //       const image = $(card).find("img").first().attr("src");
-    //       const title = $(card).find("div.multi-content").first().text();
-    //       const author = $(card).find("div.product__author").first().text();
-    //       const price = $(card).find("span.multi-price").first().text();
-    //       const availabel = $(card).find("div.product__btn-text").first().text();
-  
-    //       results.push({
-    //         source: 'bookclub.ua',
-    //         image,
-    //         title,
-    //         author: '',
-    //         price,
-    //         availabel: '',
-    //       });
-    //     })
-    //     .catch((error) => {
-    //       console.error(error);
-    //     });
+    // await browser.close();
 
     res.status(200).send({ results });
   } catch (e) {

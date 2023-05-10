@@ -12,6 +12,7 @@ const SitesForm = () => {
   const [authorSelector, setAuthorSelector] = React.useState("");
   const [priceSelector, setPriceSelector] = React.useState("");
   const [availabelSelector, setAvailabelSelector] = React.useState("");
+  const [bookUrlSelector, setBookUrlSelector] = React.useState("");
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -27,6 +28,7 @@ const SitesForm = () => {
       authorSelector,
       priceSelector,
       availabelSelector,
+      bookUrlSelector
     };
     console.log(form)
     fetch("/site", {
@@ -136,6 +138,14 @@ const SitesForm = () => {
           label="Селектор наявності"
           onChange={(e) => setAvailabelSelector(e.target.value)}
           value={availabelSelector}
+          fullWidth
+        />
+        <TextField
+          type="text"
+          variant="outlined"
+          label="Посилання на книгу"
+          onChange={(e) => setBookUrlSelector(e.target.value)}
+          value={bookUrlSelector}
           fullWidth
         />
       </Stack>

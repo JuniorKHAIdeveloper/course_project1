@@ -31,6 +31,9 @@ const siteSchema = new mongoose.Schema({
   availabelSelector: {
     type: String,
   },
+  bookUrlSelector: {
+    type: String,
+  },
 });
 
 const Site = mongoose.model("Site", siteSchema);

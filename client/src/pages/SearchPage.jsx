@@ -1,4 +1,5 @@
 import React from "react";
+import ResultsTable from "../components/ResultsTable";
 import Search from "../components/Search";
 import SearchLoader from "../components/SearchLoader";
 import Slider from "../components/Slider";
@@ -31,7 +32,8 @@ const SearchPage = () => {
     <>
       <Search setQuery={setQuery} handleSubmit={handleSubmit}/>
       {isSearching && <SearchLoader/>}
-      {Boolean(results.length) && <Slider results={results}/>}
+      {/* {Boolean(results.length) && <Slider results={results}/>} */}
+      {Boolean(results.length) && <ResultsTable results={results}/>}
     </>
   );
 };
