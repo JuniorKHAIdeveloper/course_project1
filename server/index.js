@@ -9,7 +9,11 @@ const fetch = (...args) =>
 const cheerio = require("cheerio");
 const fs = require("fs");
 const puppeteer = require('puppeteer');
+const { initAdminUser} = require('./db/functions/user');
+const cookieParser = require('cookie-parser');
 
+const auth = require('./middleware/auth');
+const userRouter = require('./db/routers/user')
 const siteRouter = require("./db/routers/site");
 const Site = require("./db/models/site");
 
@@ -17,10 +21,15 @@ const app = express();
 
 const PORT = process.env.PORT || process.env.STATIC_PORT;
 
+app.use(cookieParser());
 app.use(express.json()); // parse JSON bodies
 app.use(express.urlencoded({ extended: true })); // parse URL-encoded bodies
 
+app.use(auth)
+app.use(userRouter)
 app.use(siteRouter);
+
+initAdminUser();
 
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,

@@ -1,8 +1,8 @@
 import React from "react";
-import Root from "./pages/Root";
+import Routes from "./pages/Routes";
 
 function App() {
-  return <Root />;
+  return <Routes />;
 }
 
 export default App;

@@ -4,13 +4,13 @@ import Tab from "@mui/material/Tab";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import PersonIcon from "@mui/icons-material/Person";
-import MenuBookIcon from '@mui/icons-material/MenuBook';
-import SearchIcon from '@mui/icons-material/Search';
+import MenuBookIcon from "@mui/icons-material/MenuBook";
+import SearchIcon from "@mui/icons-material/Search";
 import SearchPage from "../pages/SearchPage";
-import LanguageIcon from '@mui/icons-material/Language';
+import LanguageIcon from "@mui/icons-material/Language";
 import SitesForm from "./SitesForm";
 import SitesTable from "./SitesTable";
-
+import Login from "./Login";
 
 function a11yProps(index) {
   return {
@@ -57,6 +57,14 @@ const Navigation = () => {
     setValue(newValue);
   };
 
+  const [isAuth, setIsAuth] = React.useState(
+    localStorage.getItem("isAuth") === "true" || false
+  );
+
+  const [isAdmin, setIsAdmin] = React.useState(
+    localStorage.getItem("isAdmin") === "true" || false
+  );
+
   return (
     <Box sx={{ width: "100%" }}>
       <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
@@ -66,11 +74,24 @@ const Navigation = () => {
           aria-label="basic tabs example"
           centered
         >
-          <Tab label={renderTabTitle(SearchIcon, 'Пошук')} {...a11yProps(0)} />
-          <Tab label={renderTabTitle(MenuBookIcon, 'Читальня')} {...a11yProps(1)} />
-          <Tab label={renderTabTitle(PersonIcon, 'Акаунт')} {...a11yProps(2)} />
-          <Tab label={renderTabTitle(LanguageIcon, 'Список сайтів')} {...a11yProps(2)} />
-          <Tab label={renderTabTitle(LanguageIcon, 'Форма сайтів')} {...a11yProps(2)} />
+          <Tab label={renderTabTitle(SearchIcon, "Пошук")} {...a11yProps(0)} />
+          <Tab
+            label={renderTabTitle(MenuBookIcon, "Читальня")}
+            {...a11yProps(1)}
+          />
+          <Tab label={renderTabTitle(PersonIcon, "Акаунт")} {...a11yProps(2)} />
+          {isAuth && isAdmin && (
+            <Tab
+              label={renderTabTitle(LanguageIcon, "Список сайтів")}
+              {...a11yProps(2)}
+            />
+          )}
+          {isAuth && isAdmin && (
+            <Tab
+              label={renderTabTitle(LanguageIcon, "Форма сайтів")}
+              {...a11yProps(2)}
+            />
+          )}
         </Tabs>
       </Box>
       <TabPanel value={value} index={0}>
@@ -80,14 +101,18 @@ const Navigation = () => {
         Item Two
       </TabPanel>
       <TabPanel value={value} index={2}>
-        Item Three
+        <Login isAuth={isAuth} setIsAuth={setIsAuth} setIsAdmin={setIsAdmin} />
       </TabPanel>
-      <TabPanel value={value} index={3}>
-        <SitesTable />
-      </TabPanel>
-      <TabPanel value={value} index={4}>
-        <SitesForm />
-      </TabPanel>
+      {isAuth && isAdmin && (
+        <TabPanel value={value} index={3}>
+          <SitesTable />
+        </TabPanel>
+      )}
+      {isAuth && isAdmin && (
+        <TabPanel value={value} index={4}>
+          <SitesForm />
+        </TabPanel>
+      )}
     </Box>
   );
 };

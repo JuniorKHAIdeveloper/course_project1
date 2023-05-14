@@ -105,4 +105,3 @@ dist
 
 # ignore react build
 build/
-.idea/
