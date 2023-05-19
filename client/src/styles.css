@@ -1,0 +1,14 @@
+body {
+  background-color: #fbeec1;
+}
+
+.MuiFormHelperText-root {
+  color: red !important;
+}
+
+.MuiAlert-standardSuccess .MuiAlert-icon {
+  color: green !important;
+}
+.MuiAlert-icon {
+  color: red !important;
+}

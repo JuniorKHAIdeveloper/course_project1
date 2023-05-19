@@ -1,39 +1,65 @@
 import React from "react";
-import ResultsTable from "../components/ResultsTable";
-import Search from "../components/Search";
-import SearchLoader from "../components/SearchLoader";
-import Slider from "../components/Slider";
+import ResultsTable from "../components/search/ResultsTable";
+import Search from "../components/search/Search";
+import SearchLoader from "../components/search/SearchLoader";
+import Typography from "@mui/material/Typography";
+import messages from "../helpers/messages";
+import Loader from "../core/Loader";
 
-const SearchPage = () => {
+const SearchPage = ({ results, setResults, isAuth, isXsScreen = "false" }) => {
   const [query, setQuery] = React.useState("");
-  const [results, setResults] = React.useState([]);
   const [isSearching, setIsSearching] = React.useState(false);
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = () => {
+    // setResults([]);
     setIsSearching(true);
-    try {
-      const response = await fetch("/search", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({search: query}),
+    fetch("/search", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ search: query }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setResults(data.results);
+        setIsSearching(false);
+        console.log(data);
+      })
+      .catch((error) => {
+        console.error(error);
       });
-      const data = await response.json();
-      setResults(data.results);
-      setIsSearching(false);
-      console.log(data);
-    } catch (error) {
-      console.error(error);
-    }
   };
 
   return (
     <>
-      <Search setQuery={setQuery} handleSubmit={handleSubmit}/>
-      {isSearching && <SearchLoader/>}
-      {/* {Boolean(results.length) && <Slider results={results}/>} */}
-      {Boolean(results.length) && <ResultsTable results={results}/>}
+      {!Boolean(results?.length) && (
+        <>
+          {messages.search.map((message) => {
+            return (
+              <>
+                <Typography
+                  variant="h5"
+                  gutterBottom
+                  sx={{ textAlign: "justify" }}
+                >
+                  {message}
+                </Typography>
+                <br />
+              </>
+            );
+          })}
+        </>
+      )}
+      <Search query={query} setQuery={setQuery} handleSubmit={handleSubmit} />
+      {isSearching && <Loader />}
+      {Boolean(results?.length) && (
+        <ResultsTable
+          isXsScreen={isXsScreen}
+          results={results}
+          isAuth={isAuth}
+        />
+      )}
     </>
   );
 };

@@ -10,6 +10,9 @@ const siteSchema = new mongoose.Schema({
   siteSearchUrl: {
     type: String,
   },
+  siteLogoUrl: {
+    type: String,
+  },
   containerSelector: {
     type: String,
   },

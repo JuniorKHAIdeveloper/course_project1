@@ -17,16 +17,44 @@ const userSchema = new mongoose.Schema({
       },
     },
   ],
+  books: [
+    {
+      source: {
+        type: String,
+      },
+      image: {
+        type: String,
+      },
+      title: {
+        type: String,
+      },
+      author: {
+        type: String,
+      },
+      price: {
+        type: String,
+      },
+      available: {
+        type: String,
+      },
+      bookUrl: {
+        type: String,
+      },
+    },
+  ],
   role: {
     type: String,
-    default: "user"
+    default: "user",
   },
 });
 
 userSchema.methods.generateAuthToken = async function () {
   const user = this;
   // move keyword to .env
-  const token = jwt.sign({ _id: user._id.toString() }, process.env.SECRET_ENCODE_PHRASE);
+  const token = jwt.sign(
+    { _id: user._id.toString() },
+    process.env.SECRET_ENCODE_PHRASE
+  );
 
   user.tokens = user.tokens.concat({ token });
   await user.save();

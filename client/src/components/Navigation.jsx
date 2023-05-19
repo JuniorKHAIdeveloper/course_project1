@@ -8,9 +8,16 @@ import MenuBookIcon from "@mui/icons-material/MenuBook";
 import SearchIcon from "@mui/icons-material/Search";
 import SearchPage from "../pages/SearchPage";
 import LanguageIcon from "@mui/icons-material/Language";
-import SitesForm from "./SitesForm";
-import SitesTable from "./SitesTable";
-import Login from "./Login";
+import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
+import InfoIcon from '@mui/icons-material/Info';
+import SitesForm from "../pages/SitesFormPage";
+import SitesTable from "../pages/SitesTablePage";
+import Account from "../pages/AccountPage";
+import Alerts from "../core/Alerts";
+import AboutUs from "../pages/AboutUsPage";
+import { useMediaQuery } from "@mui/material";
+import BookLove from "../images/booklove.png"
+
 
 function a11yProps(index) {
   return {
@@ -51,7 +58,11 @@ const renderTabTitle = (Icon, title) => {
 };
 
 const Navigation = () => {
+  const isXsScreen = useMediaQuery((theme) => theme.breakpoints.only('xs'));
+  const isMdScreen = useMediaQuery((theme) => theme.breakpoints.up('md'));
   const [value, setValue] = React.useState(0);
+  const [results, setResults] = React.useState([]);
+  const [alert, setAlert] = React.useState(null);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -65,21 +76,41 @@ const Navigation = () => {
     localStorage.getItem("isAdmin") === "true" || false
   );
 
+  let additionalProps = {};
+
+  if (isXsScreen) {
+    additionalProps = {
+      variant: "scrollable",
+    };
+  } 
+  if (isMdScreen) {
+    additionalProps = {
+      centered: true,
+    };
+  }
+
   return (
     <Box sx={{ width: "100%" }}>
-      <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+      <Box sx={{ borderBottom: 1, borderColor: "divider", position: "relative"}}>
+      {!isXsScreen && <img src={BookLove} alt="КнигоLove" style={{height: "52.5px", position: "absolute", left: 0, top: 0}} />}
         <Tabs
           value={value}
           onChange={handleChange}
-          aria-label="basic tabs example"
-          centered
+          {...additionalProps}
+          // variant={'centered'}
+          // aria-label="basic tabs example"
+          // centered
+          // variant="scrollable"
+          scrollButtons={true}
+          ariaLabel="scrollable prevent tabs example"
         >
           <Tab label={renderTabTitle(SearchIcon, "Пошук")} {...a11yProps(0)} />
+
+          <Tab label={renderTabTitle(PersonIcon, "Кабінет")} {...a11yProps(1)} />
           <Tab
-            label={renderTabTitle(MenuBookIcon, "Читальня")}
-            {...a11yProps(1)}
+            label={renderTabTitle(InfoIcon, "Про нас")}
+            {...a11yProps(2)}
           />
-          <Tab label={renderTabTitle(PersonIcon, "Акаунт")} {...a11yProps(2)} />
           {isAuth && isAdmin && (
             <Tab
               label={renderTabTitle(LanguageIcon, "Список сайтів")}
@@ -88,31 +119,39 @@ const Navigation = () => {
           )}
           {isAuth && isAdmin && (
             <Tab
-              label={renderTabTitle(LanguageIcon, "Форма сайтів")}
+              label={renderTabTitle(PlaylistAddIcon, "Форма сайтів")}
               {...a11yProps(2)}
             />
           )}
         </Tabs>
       </Box>
       <TabPanel value={value} index={0}>
-        <SearchPage />
+        <SearchPage results={results} setResults={setResults} isAuth={isAuth} isXsScreen={isXsScreen} />
       </TabPanel>
       <TabPanel value={value} index={1}>
-        Item Two
+        <Account
+          isAdmin={isAdmin}
+          isAuth={isAuth}
+          setIsAuth={setIsAuth}
+          setIsAdmin={setIsAdmin}
+          setAlert={setAlert}
+        />
       </TabPanel>
       <TabPanel value={value} index={2}>
-        <Login isAuth={isAuth} setIsAuth={setIsAuth} setIsAdmin={setIsAdmin} />
+        <AboutUs />
       </TabPanel>
       {isAuth && isAdmin && (
         <TabPanel value={value} index={3}>
-          <SitesTable />
+          <SitesTable setAlert={setAlert} />
         </TabPanel>
       )}
       {isAuth && isAdmin && (
         <TabPanel value={value} index={4}>
-          <SitesForm />
+          <SitesForm setAlert={setAlert} />
         </TabPanel>
       )}
+
+      {Boolean(alert) && <Alerts alert={alert} setAlert={setAlert} />}
     </Box>
   );
 };

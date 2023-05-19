@@ -1,8 +1,8 @@
 import React from "react";
-import Routes from "./pages/Routes";
+import Root from "./Root";
 
 function App() {
-  return <Routes />;
+  return <Root style={{backgroundColor: "#FBEEC1"}}/>;
 }
 
 export default App;

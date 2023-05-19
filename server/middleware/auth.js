@@ -1,25 +1,24 @@
 const jwt = require("jsonwebtoken");
 const User = require("../db/models/user");
 
+const protectedRoutes = ["/logout", "/site", "/book", "/user"];
+
 const auth = async (req, res, next) => {
-  if (req.path === '/logout') {
+  if (protectedRoutes.includes(req.path)) {
     try {
-      console.log('start checking')
-      console.log(req.cookies)
       const token = req.cookies.jwttoken;
       const decoded = jwt.verify(token, process.env.SECRET_ENCODE_PHRASE);
-      console.log(decoded)
       const user = await User.findOne({
         _id: decoded._id,
         "tokens.token": token,
       });
-      console.log(user)
+
       if (!user) {
         throw new Error();
       }
 
-      req.token = token
-      req.user = user
+      req.token = token;
+      req.user = user;
 
       next();
     } catch (e) {

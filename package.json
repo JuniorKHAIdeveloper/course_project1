@@ -9,7 +9,8 @@
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "start": "node server/index.js",
     "build": "cd ./client && npm run build && cd ..",
-    "setup": "npm i && cd ./client && npm i && cd .. && cd ./server && npm i && cd .."
+    "setup": "npm i && cd ./client && npm i && cd .. && cd ./server && npm i && cd ..",
+    "test": "cd ./client && npm run test && cd .."
   },
   "repository": {
     "type": "git",
