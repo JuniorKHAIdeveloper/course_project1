@@ -50,7 +50,6 @@ const userSchema = new mongoose.Schema({
 
 userSchema.methods.generateAuthToken = async function () {
   const user = this;
-  // move keyword to .env
   const token = jwt.sign(
     { _id: user._id.toString() },
     process.env.SECRET_ENCODE_PHRASE
@@ -76,6 +75,14 @@ userSchema.statics.findByCredentials = async (email, password) => {
   }
 
   return user;
+};
+
+userSchema.statics.checkDuplicate = async (email) => {
+  const user = await User.findOne({ email });
+
+  if (user) {
+    throw new Error("User already exist");
+  }
 };
 
 userSchema.pre("save", async function (next) {

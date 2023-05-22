@@ -2,7 +2,6 @@ const express = require("express");
 const Site = require("../models/site");
 const router = new express.Router();
 const cheerio = require("cheerio");
-const fs = require("fs");
 const fetch = (...args) =>
   import("node-fetch").then(({ default: fetch }) => fetch(...args));
 
@@ -18,15 +17,19 @@ router.post("/search", async (req, res) => {
           const data = await response.text();
           const $ = cheerio.load(data);
 
-          // fs.writeFile(`${site.siteName}.html`, $.html(), (err) => {
-          //   if (err) throw err;
-          //   console.log('HTML file saved!');
-          // });
-
           const parent = $(site.containerSelector);
           const card = parent.children(site.itemSelector).first();
 
           const image = $(card).find(site.imageSelector).first().attr("src");
+          const dataImg = $(card).find(site.imageSelector).first().attr("data-src");
+
+          let imgUrl;
+          if (dataImg) {
+            imgUrl = dataImg;
+          } else {
+            imgUrl = image;
+          }
+
           const title = $(card).find(site.titleSelector).first().text();
           const author = $(card).find(site.authorSelector).first().text();
           const price = $(card).find(site.priceSelector).first().text();
@@ -41,15 +44,16 @@ router.post("/search", async (req, res) => {
               .replace(/ /g, "")
               .replace("грн.", "")
               .replace("грн", "")
+              .replace("₴", "")
               .trim();
           };
 
           if (Boolean(title)) {
             resolve({
               source: site.siteName,
-              image: image?.includes("http")
-                ? image
-                : `${site.siteUrl}${image}`,
+              image: imgUrl?.includes("http")
+                ? imgUrl
+                : `${site.siteUrl}${imgUrl}`,
               title,
               author,
               price: parsePrice(price),

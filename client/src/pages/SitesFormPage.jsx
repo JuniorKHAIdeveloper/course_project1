@@ -1,5 +1,5 @@
 import React from "react";
-import { TextField, Button, Container, Stack } from "@mui/material";
+import { TextField, Button, Stack } from "@mui/material";
 
 const SitesForm = ({ setAlert }) => {
   const [siteName, setSiteName] = React.useState("");
@@ -47,7 +47,7 @@ const SitesForm = ({ setAlert }) => {
       availabelSelector,
       bookUrlSelector,
     };
-    console.log(form);
+
     fetch("/site", {
       method: "POST",
       body: JSON.stringify(form),
@@ -56,12 +56,11 @@ const SitesForm = ({ setAlert }) => {
       },
     })
       .then((res) => {
-        // loading status
         if (res.ok) {
           setAlert({ type: "success", message: "Збережено успішно." });
           clearForm();
         } else {
-          return res.json().then((data) => console.log(data));
+          return res.json().then((data) => data);
         }
       })
       .catch((e) => {

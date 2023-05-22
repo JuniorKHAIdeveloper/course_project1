@@ -1,5 +1,11 @@
 import React from "react";
-import { Box, Button, Typography, Modal as MaterialModal, Grid } from "@mui/material";
+import {
+  Box,
+  Button,
+  Typography,
+  Modal as MaterialModal,
+  Grid,
+} from "@mui/material";
 
 const style = {
   position: "absolute",
@@ -8,18 +14,22 @@ const style = {
   transform: "translate(-50%, -50%)",
   width: 400,
   bgcolor: "background.paper",
-  // border: "2px solid #000",
   boxShadow: 24,
   p: 4,
 };
 
-const Modal = ({ message, modalOpen: open, setModalOpen: setOpen, acceptHandler }) => {
+const Modal = ({
+  message,
+  modalOpen: open,
+  setModalOpen: setOpen,
+  acceptHandler,
+}) => {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const handleAccept = () => {
     acceptHandler();
     setOpen(false);
-  }
+  };
 
   return (
     <MaterialModal

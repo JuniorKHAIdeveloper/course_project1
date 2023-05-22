@@ -1,22 +1,16 @@
 import * as React from "react";
-import {
-  Button,
-  Card,
-  Container,
-  Grid,
-  TextField,
-  Checkbox,
-  FormGroup,
-  FormControlLabel,
-  Snackbar,
-  Alert,
-  Typography,
-} from "@mui/material";
+import { Button, Card, Grid, Typography } from "@mui/material";
 import UserBooks from "../components/account/UserBooks";
 import Modal from "../core/Modal";
 import Login from "../components/account/Login";
 
-export default function Account({ isAdmin, isAuth, setIsAuth, setIsAdmin, setAlert }) {
+export default function Account({
+  isAdmin,
+  isAuth,
+  setIsAuth,
+  setIsAdmin,
+  setAlert,
+}) {
   const [userInfo, setUserInfo] = React.useState({});
   const [modalOpen, setModalOpen] = React.useState(false);
 
@@ -36,14 +30,12 @@ export default function Account({ isAdmin, isAuth, setIsAuth, setIsAdmin, setAle
       },
     })
       .then((res) => {
-        // loading status
         if (res.ok) {
-          // fetchSites();
           localStorage.setItem("isAuth", false);
           setIsAuth(false);
           setAlert({ type: "success", message: "Видалено успішно." });
         } else {
-          return res.json().then((data) => console.log(data));
+          return res.json().then((data) => data);
         }
       })
       .catch((e) => {
@@ -64,19 +56,15 @@ export default function Account({ isAdmin, isAuth, setIsAuth, setIsAdmin, setAle
       },
     })
       .then((res) => {
-        // loading status
         if (res.ok) {
           localStorage.setItem("isAuth", true);
           setIsAuth(true);
-          // must reload
-          // window.location.pathname = "/admin/page/product";
           return res.json();
         } else {
           return res.json().then((data) => console.log(data));
         }
       })
       .then((data) => {
-        console.log(data);
         if (data.role === "admin") {
           localStorage.setItem("isAdmin", true);
           localStorage.setItem("userId", data.userId);
@@ -106,14 +94,10 @@ export default function Account({ isAdmin, isAuth, setIsAuth, setIsAdmin, setAle
       },
     })
       .then((res) => {
-        // loading status
         if (res.ok) {
           setAlert({ type: "success", message: "Зареєстровано успішно." });
-          // must reload
-          // window.location.pathname = "/admin/page/product";
-          // return res.json();
         } else {
-          return res.json().then((data) => console.log(data));
+          return res.json().then((data) => data);
         }
       })
       .catch((error) => {
@@ -133,26 +117,42 @@ export default function Account({ isAdmin, isAuth, setIsAuth, setIsAdmin, setAle
       },
     })
       .then((res) => {
-        // loading status
         if (res.ok) {
-          // setOpenAlert(true);
-          // must reload
-          // window.location.pathname = "/admin/page/product";
           return res.json();
         } else {
-          return res.json().then((data) => console.log(data));
+          return res.json().then((data) => data);
         }
       })
       .then((data) => {
         setUserInfo(data);
-        // console.log(data);
+      })
+      .catch((error) => {
+        console.log(error);
       });
   };
 
-  const submitHandler = (e, isRegistration, data) => {
+  const submitHandler = async (e, isRegistration, data) => {
     if (isRegistration) {
+      try {
+        const response = await fetch("/check", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email: data.email }),
+        });
+
+        if (!response.ok) {
+          setAlert({ type: "error", message: "Користувач вже існує." });
+          return;
+        }
+      } catch (e) {
+        setAlert({ type: "error", message: "Виникла помилка." });
+        return;
+      }
+
       const enteredEmail = data.email;
-      const enteredPassword = data.password1;
+      const enteredPassword = data.password;
 
       const url = "/registration";
       registr(url, enteredEmail, enteredPassword);
@@ -168,17 +168,14 @@ export default function Account({ isAdmin, isAuth, setIsAuth, setIsAdmin, setAle
   const unAuth = () => {
     fetch("logout")
       .then((res) => {
-        // loading status
         if (res.ok) {
           localStorage.setItem("isAuth", false);
           setIsAuth(false);
           localStorage.setItem("isAdmin", false);
           setIsAdmin(false);
           setUserInfo({});
-          // must reload
-          // window.location.pathname = "/admin/page/product";
         } else {
-          return res.json().then((data) => console.log(data));
+          return res.json().then((data) => data);
         }
       })
       .catch((error) => {
@@ -202,16 +199,16 @@ export default function Account({ isAdmin, isAuth, setIsAuth, setIsAdmin, setAle
               md={2}
               sx={{
                 borderBottom: {
-                  xs: "1px solid rgb(224, 224, 224)", // Color on extra-small screens
-                  md: "none", // Color on extra-small screens
+                  xs: "1px solid rgb(224, 224, 224)",
+                  md: "none",
                 },
                 borderRight: {
-                  xs: "none", // Color on extra-small screens
-                  md: "1px solid rgb(224, 224, 224)", // Color on extra-small screens
+                  xs: "none",
+                  md: "1px solid rgb(224, 224, 224)",
                 },
               }}
             >
-              <Typography variant="h5" sx={{ my: 2 }}>
+              <Typography variant="h6" sx={{ my: 2 }}>
                 {userInfo?.login}
               </Typography>
               {!isAdmin && (
@@ -230,7 +227,7 @@ export default function Account({ isAdmin, isAuth, setIsAuth, setIsAdmin, setAle
               </Button>
             </Grid>
             <Grid item xs={12} md={10}>
-              <Typography variant="h5" sx={{ my: 2, textAlign: "center" }}>
+              <Typography variant="h6" sx={{ my: 2, textAlign: "center" }}>
                 Вподобання
               </Typography>
               <UserBooks results={userInfo?.books} getUserInfo={getUserInfo} />

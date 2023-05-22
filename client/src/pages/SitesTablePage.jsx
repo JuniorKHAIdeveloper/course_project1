@@ -30,12 +30,11 @@ const SitesTable = ({ setAlert }) => {
       },
     })
       .then((res) => {
-        // loading status
         if (res.ok) {
           fetchSites();
           setAlert({ type: "success", message: "Видалено успішно." });
         } else {
-          return res.json().then((data) => console.log(data));
+          return res.json().then((data) => data);
         }
       })
       .catch((e) => {
@@ -128,7 +127,6 @@ const SitesTable = ({ setAlert }) => {
     const newObj = { ...editedProducts };
     newObj[newRow._id] = { ...newRow };
     setEditedProducts(newObj);
-    // console.log(newRow)
     return newRow;
   };
 
@@ -152,12 +150,9 @@ const SitesTable = ({ setAlert }) => {
       },
     })
       .then((res) => {
-        // loading status
         if (res.ok) {
           fetchSites();
           setAlert({ type: "success", message: "Збережено успішно." });
-        } else {
-          return res.json().then((data) => console.log(data));
         }
       })
       .catch((e) => {
@@ -179,7 +174,6 @@ const SitesTable = ({ setAlert }) => {
         checkboxSelection
         disableRowSelectionOnClick
         onRowSelectionModelChange={(ids) => {
-          console.log(ids);
           setSelectedRows(ids);
         }}
         experimentalFeatures={{ newEditingApi: true }}

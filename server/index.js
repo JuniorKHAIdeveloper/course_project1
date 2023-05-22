@@ -16,8 +16,8 @@ const app = express();
 const PORT = process.env.PORT || process.env.STATIC_PORT;
 
 app.use(cookieParser());
-app.use(express.json()); // parse JSON bodies
-app.use(express.urlencoded({ extended: true })); // parse URL-encoded bodies
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.use(auth)
 app.use(userRouter)
@@ -30,7 +30,7 @@ if (process.env.MODE === "production" && !__dirname.includes("http")) {
   const dir = __dirname.replace("server", "client");
   app.use(express.static(path.join(dir, "build")));
 
-  app.get("/*", function (req, res) {
+  app.get("/", function (req, res) {
     res.sendFile(path.join(dir, "build", "index.html"));
   });
 }
@@ -39,7 +39,7 @@ if (process.env.MODE === "production" && __dirname.includes("http")) {
   const dir = __dirname;
   app.use(express.static(path.join(dir, "build")));
 
-  app.get("/*", function (req, res) {
+  app.get("/", function (req, res) {
     res.sendFile(path.join(dir, "build", "index.html"));
   });
 }

@@ -12,3 +12,24 @@ body {
 .MuiAlert-icon {
   color: red !important;
 }
+
+* {
+  font-family: "Merriweather", serif !important;
+}
+
+a {
+  color: black;
+  font-size: 16px !important;
+}
+
+a:visited {
+  color: black;
+}
+
+a:hover {
+  color: black;
+}
+
+a:active {
+  color: black;
+}

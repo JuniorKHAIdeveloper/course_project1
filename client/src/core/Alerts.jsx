@@ -9,7 +9,7 @@ const Alerts = ({ alert, setAlert }) => {
 
     setAlert(null);
   };
-  // type "success"
+
   return (
     <Snackbar
       open={Boolean(alert)}

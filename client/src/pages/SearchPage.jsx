@@ -1,7 +1,6 @@
 import React from "react";
 import ResultsTable from "../components/search/ResultsTable";
 import Search from "../components/search/Search";
-import SearchLoader from "../components/search/SearchLoader";
 import Typography from "@mui/material/Typography";
 import messages from "../helpers/messages";
 import Loader from "../core/Loader";
@@ -11,7 +10,6 @@ const SearchPage = ({ results, setResults, isAuth, isXsScreen = "false" }) => {
   const [isSearching, setIsSearching] = React.useState(false);
 
   const handleSubmit = () => {
-    // setResults([]);
     setIsSearching(true);
     fetch("/search", {
       method: "POST",
@@ -24,7 +22,6 @@ const SearchPage = ({ results, setResults, isAuth, isXsScreen = "false" }) => {
       .then((data) => {
         setResults(data.results);
         setIsSearching(false);
-        console.log(data);
       })
       .catch((error) => {
         console.error(error);
@@ -36,10 +33,14 @@ const SearchPage = ({ results, setResults, isAuth, isXsScreen = "false" }) => {
       {!Boolean(results?.length) && (
         <>
           {messages.search.map((message) => {
-            return (
+            return isXsScreen ? (
+              <>
+                <h4 style={{ textAlign: "justify" }}>{message}</h4>
+              </>
+            ) : (
               <>
                 <Typography
-                  variant="h5"
+                  variant="h6"
                   gutterBottom
                   sx={{ textAlign: "justify" }}
                 >

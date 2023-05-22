@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Button, Typography, Modal as MaterialModal, Grid } from "@mui/material";
+import { Box, Modal as MaterialModal } from "@mui/material";
 import SearchLoader from "../components/search/SearchLoader";
 
 const style = {
@@ -9,7 +9,6 @@ const style = {
   transform: "translate(-50%, -50%)",
   width: 400,
   bgcolor: "background.paper",
-  // border: "2px solid #000",
   boxShadow: 24,
   p: 4,
 };
