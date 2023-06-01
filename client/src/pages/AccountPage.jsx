@@ -143,7 +143,7 @@ export default function Account({
         });
 
         if (!response.ok) {
-          setAlert({ type: "error", message: "Користувач вже існує." });
+          setAlert({ type: "error", message: "Користувач з таким логіном вже існує." });
           return;
         }
       } catch (e) {
