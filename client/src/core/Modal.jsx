@@ -19,10 +19,14 @@ const style = {
 };
 
 const Modal = ({
+  showHeader = true,
+  header = "Ви впевнені?",
   message,
   modalOpen: open,
   setModalOpen: setOpen,
   acceptHandler,
+  acceptButtonText = "Так",
+  declineButtonText = "Ні",
 }) => {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -45,7 +49,7 @@ const Modal = ({
           component="h2"
           sx={{ textAlign: "center" }}
         >
-          Ви впевнені?
+          {showHeader && header}
         </Typography>
         <Typography
           id="modal-modal-description"
@@ -62,7 +66,7 @@ const Modal = ({
               sx={{ my: 2, mr: 2 }}
               color="success"
             >
-              Так
+              {acceptButtonText}
             </Button>
           </Grid>
           <Grid item>
@@ -72,7 +76,7 @@ const Modal = ({
               sx={{ my: 2 }}
               color="error"
             >
-              Ні
+              {declineButtonText}
             </Button>
           </Grid>
         </Grid>

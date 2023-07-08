@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 const User = require("../db/models/user");
 
-const protectedRoutes = ["/logout", "/site", "/book", "/user"];
+const protectedRoutes = ["/logout", "/site", "/book", "/user", "/export", "/import"];
 
 const auth = async (req, res, next) => {
   if (protectedRoutes.includes(req.path)) {
